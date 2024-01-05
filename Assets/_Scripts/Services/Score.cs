@@ -19,9 +19,9 @@ namespace _Scripts
         {
             _currentScoreDisplayer = currentScoreDisplayer;
             _currentScoreDisplayer.UpdateScoreText(_currentGameScore);
-            
-            _recordScore = PlayerPrefs.GetInt(RecordScoreKey, 0);
         }
+
+        public void LoadRecordScore() => _recordScore = PlayerPrefs.GetInt(RecordScoreKey, 0);
         
          public void AddScore(int score)
         {

@@ -46,7 +46,6 @@ public class GameContext : MonoBehaviour, IGameLocator, IGameMachine
     
     public void RestartGame()
     {
-        FinishGame();
         _gameStateMachine.RestartGame();
     }
     

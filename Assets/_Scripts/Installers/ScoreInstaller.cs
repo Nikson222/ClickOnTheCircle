@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace _Scripts
 {
-    public class ScoreInstaller : MonoBehaviour, IGameListenerProvider, IGameServiceProvider
+    public class ScoreInstaller : MonoBehaviour, IGameListenerProvider, IGameServiceProvider, IGameConstructor
     {
         private Score _score = new();
         public IEnumerable<object> GetListeners()
@@ -14,6 +14,11 @@ namespace _Scripts
         public IEnumerable<object> GetServices()
         {
             yield return _score;
+        }
+
+        public void ConstructGame(IGameLocator serviceLocator)
+        {
+            _score.LoadRecordScore();
         }
     }
 }

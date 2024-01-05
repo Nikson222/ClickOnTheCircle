@@ -19,9 +19,11 @@ public class CircleSpawner : IGameStartListener, IGameFinishListener, IUpdateGam
     private float _timer;
 
     private bool _isActive = false;
-    
+
     private Score _score;
-    
+
+    private List<Circle> _activeCircles = new();
+
     public void Construct(float maxSpawnDelay, Circle circlePrefab, float maxSize, List<Color> availableColors,
         Score score)
     {
@@ -29,7 +31,7 @@ public class CircleSpawner : IGameStartListener, IGameFinishListener, IUpdateGam
         _circlePrefab = circlePrefab;
         _maxSize = maxSize;
         _availableColors = availableColors;
-        
+
         _objectPooler = new ObjectPooler<Circle>();
         _objectPooler.Init(_circlePrefab);
 
@@ -37,7 +39,7 @@ public class CircleSpawner : IGameStartListener, IGameFinishListener, IUpdateGam
             Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
 
         _score = score;
-        
+
         _timer = 0;
     }
 
@@ -51,6 +53,13 @@ public class CircleSpawner : IGameStartListener, IGameFinishListener, IUpdateGam
         _isActive = false;
         _objectPooler = new ObjectPooler<Circle>();
         _objectPooler.Init(_circlePrefab);
+
+        foreach (var circle in _activeCircles)
+        {
+            circle.gameObject.SetActive(false);
+        }
+        
+        _activeCircles.Clear();
     }
 
     public void OnUpdate(float deltaTime)
@@ -65,15 +74,24 @@ public class CircleSpawner : IGameStartListener, IGameFinishListener, IUpdateGam
 
                 Vector2 newSize = GetRandomSize();
                 Color newColor = GetRandomColor();
-                
+
+                _activeCircles.Add(circle);
+
                 if (!circle.IsAlreadyUsed)
+                {
                     circle.OnExploded += _score.AddScore;
-                
+                    circle.OnExploded += i =>
+                    {
+                        _activeCircles.Remove(circle);
+                    };
+                }
+
                 circle.SetStyle(newColor, newSize);
+
 
                 Vector2 newPosition = GenerateRandomPosition(circle.Radius);
 
-                
+
                 circle.transform.position = newPosition;
             }
 
